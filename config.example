@@ -1,0 +1,9 @@
+log-file=/opt/factorio/server.out
+server-id=1
+
+rcon-host=localhost
+rcon-port=31337
+rcon-password=asdasd
+
+ws-url=wss://factoriommo.org/ws_v1/server_callback/1/
+ws-password=asdasd

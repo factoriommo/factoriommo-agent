@@ -1,0 +1,8 @@
+[Unit]
+Description=Agent for FactorioMMO
+
+[Service]
+ExecStart=/opt/factoriommo-agent/env/bin/fmcd
+
+[Install]
+WantedBy=multi-user.target
