@@ -302,6 +302,17 @@ class FactorioMCd:
                     "data": value
                 }
             })
+        elif key in ['productivity-module-3']:
+            value = int(value)
+            if value <= 0:
+                return
+            self.ws.to_server.put({
+                "namespace": "production",
+                "data": {
+                    "type": key,
+                    "data": value
+                }
+            })
         elif key in ['player-online-count', 'rocket-progress']:
             value = int(value)
             if value < 0:
@@ -369,7 +380,8 @@ class FactorioMCd:
                         self.send_enemy_score('player-online-count', v)
                     except ValueError:
                         pass
-                elif k in ['science-pack-1', 'science-pack-2', 'science-pack-3', 'alien-science-pack', 'rocket-progress']:
+                elif k in ['science-pack-1', 'science-pack-2', 'science-pack-3', 'alien-science-pack',
+                           'rocket-progress', 'productivity-module-3']:
                     try:
                         self.send_enemy_score(k, int(v))
                     except ValueError:

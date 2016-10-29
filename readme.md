@@ -1,5 +1,5 @@
-Factorio MMO Production scenario
---------------------------------
+Factorio MMO Agent
+------------------
 
 
 This repository contains a Python-written daemon that acts as a 
