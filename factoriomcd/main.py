@@ -302,7 +302,7 @@ class FactorioMCd:
                     "data": value
                 }
             })
-        elif key in ['productivity-module-3', 'efficiency-module-3', 'speed-module-3']:
+        elif key in ['productivity-module-3', 'effectivity-module-3', 'speed-module-3']:
             value = int(value)
             if value <= 0:
                 return
@@ -381,7 +381,7 @@ class FactorioMCd:
                     except ValueError:
                         pass
                 elif k in ['science-pack-1', 'science-pack-2', 'science-pack-3', 'alien-science-pack',
-                           'rocket-progress', 'productivity-module-3', 'efficiency-module-3', 'speed-module-3']:
+                           'rocket-progress', 'productivity-module-3', 'effectivity-module-3', 'speed-module-3']:
                     try:
                         self.send_enemy_score(k, int(v))
                     except ValueError:
