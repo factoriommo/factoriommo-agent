@@ -302,6 +302,17 @@ class FactorioMCd:
                     "data": value
                 }
             })
+        elif key in ['biter-count']:
+            value = int(value)
+            if value < 0:
+                return
+            self.ws.to_server.put({
+                "namespace": "status",
+                "data": {
+                    "type": key,
+                    "data": value
+                }
+            })
         elif key in ['productivity-module-3', 'effectivity-module-3', 'speed-module-3']:
             value = int(value)
             if value <= 0:
@@ -381,7 +392,8 @@ class FactorioMCd:
                     except ValueError:
                         pass
                 elif k in ['science-pack-1', 'science-pack-2', 'science-pack-3', 'alien-science-pack',
-                           'rocket-progress', 'productivity-module-3', 'effectivity-module-3', 'speed-module-3']:
+                           'rocket-progress', 'productivity-module-3', 'effectivity-module-3', 'speed-module-3',
+                           'biter-count']:
                     try:
                         self.send_enemy_score(k, int(v))
                     except ValueError:
