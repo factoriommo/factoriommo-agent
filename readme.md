@@ -2,7 +2,7 @@ Factorio MMO Agent
 ------------------
 
 
-This repository contains a Python-written daemon that acts as a 
+This repository contains a Python-written daemon that acts as a
 bridge between the factorio server and mission control server.
 
 
@@ -21,6 +21,7 @@ Usage
  $ cp config.example /etc/factoriomcd.ini
  > Edit /etc/factoriomcd.ini to suit your needs.
  # cp factoriomcd.service /etc/systemd/system/
+ # python setup.py develop
  # systemctl start factoriomcd
- 
+
 ```
