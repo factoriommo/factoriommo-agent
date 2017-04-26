@@ -1,3 +1,5 @@
-coloredlogs==5.0
 ConfigArgParse==0.10.0
+coloredlogs==5.0
+humanfriendly==2.4
+requests==2.13.0
 ws4py==0.3.5

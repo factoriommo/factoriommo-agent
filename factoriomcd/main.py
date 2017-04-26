@@ -15,6 +15,9 @@ import json
 import re
 import os
 
+from logrouter import router as logrouter
+import modules.alidrisi
+
 
 CHAT_LOG_REGEX = re.compile(r'^(?P<year>\d{4})\-(?P<month>\d{2})\-(?P<day>\d{2}) (?P<hour>\d{2})\:(?P<minute>\d{2})\:(?P<second>\d{2}) (?P<namespace>\[\w+\]) (?P<username>\S+)\: (?P<message>.+)$')  # noqa
 
@@ -147,7 +150,7 @@ class RconSenderThread(Thread):
 
 class MasterConnectionClient(WebSocketClient):
     def __init__(self, url, parent, **kwargs):
-        super(MasterConnectionClient, self).__init__(url, **kwargs)
+        # super(MasterConnectionClient, self).__init__(url, **kwargs)
         self.parent = parent
 
     def opened(self):
@@ -215,11 +218,11 @@ class FactorioMCd:
     def run(self):
         self.log = LogReaderThread(self.options)
         self.rcon = RconSenderThread(self.options)
-        self.ws = MasterConnectionThread(self.options)
+        # self.ws = MasterConnectionThread(self.options)
 
         self.log.start()
         self.rcon.start()
-        self.ws.start()
+        # self.ws.start()
 
         try:
             self.main_loop()
@@ -228,14 +231,14 @@ class FactorioMCd:
         finally:
             self.log.running.value = False
             self.rcon.running.value = False
-            self.ws.running.value = False
+            # self.ws.running.value = False
 
             logger.debug("Stopping log thread")
             self.log.join()
             logger.debug("Stopping rcon thread")
             self.rcon.join()
             logger.debug("Stopping master connection websocket thread")
-            self.ws.join()
+            # self.ws.join()
 
         logger.info("Terminated.")
 
@@ -267,8 +270,8 @@ class FactorioMCd:
                 logger.exception("Something went wrong handling some chat data")
 
             try:
-                wsdata = self.ws.from_server.get(False)
-                self.parse_wsdata(wsdata)
+                # wsdata = self.ws.from_server.get(False)
+                # self.parse_wsdata(wsdata)
                 sleeptime = 0.1
             except Empty:
                 if sleeptime != 0.1:
@@ -282,87 +285,93 @@ class FactorioMCd:
         if data.get('namespace', False):
             del data['namespace']
 
-        self.ws.to_server.put({
-            "namespace": "chat",
-            "data": data
-        })
+        # self.ws.to_server.put({
+        #     "namespace": "chat",
+        #     "data": data
+        # })
 
     def parse_logdata(self, data):
-        splitted = data.split("::")
-        key = splitted[0]
-        value = "::".join(splitted[1:])
-        if key in ['science-pack-1', 'science-pack-2', 'science-pack-3', 'alien-science-pack']:
-            value = int(value)
-            if value <= 0:
-                return
-            self.ws.to_server.put({
-                "namespace": "consumption",
-                "data": {
-                    "type": key,
-                    "data": value
-                }
-            })
-        elif key in ['biter-count']:
-            value = int(value)
-            if value < 0:
-                return
-            self.ws.to_server.put({
-                "namespace": "status",
-                "data": {
-                    "type": key,
-                    "data": value
-                }
-            })
-        elif key in ['productivity-module-3', 'effectivity-module-3', 'speed-module-3']:
-            value = int(value)
-            if value <= 0:
-                return
-            self.ws.to_server.put({
-                "namespace": "production",
-                "data": {
-                    "type": key,
-                    "data": value
-                }
-            })
-        elif key in ['player-online-count', 'rocket-progress']:
-            value = int(value)
-            if value < 0:
-                return
-            self.ws.to_server.put({
-                "namespace": "updatecounter",
-                "data": {
-                    "type": key,
-                    "data": value
-                }
-            })
-        elif key in ['player_joined', 'player_left']:
-            logger.debug("Sending player event for %s : %s", key, value)
-            self.ws.to_server.put({
-                "namespace": "event",
-                "data": {
-                    "type": key,
-                    "data": {
-                        "playername": value
-                    }
-                }
-            })
-        elif key == 'rocket_launched':
-            logger.debug("Sending player event for %s : %s", key, value)
-            self.ws.to_server.put({
-                "namespace": "event",
-                "data": {"type": key}
-            })
-        elif key in ['rocket-silo-built', 'rocket-silo-mined']:
-            logger.debug("Sending event for rocket built")
-            self.ws_to_server.put({
-                "namespace": "event",
-                "data": {
-                    "type": "rocket-silo-built",
-                    "playername": value
-                }
-            })
-        else:
-            logger.debug("Left data with key %s untouched, value: %s", key, value)
+        # try:
+        logrouter.req(data)
+        # except:
+        #     logger.info("Couldn't find an appropiate path")
+
+    # def parse_logdata_legacy(self, data):
+    #     splitted = data.split("::")
+    #     key = splitted[0]
+    #     value = "::".join(splitted[1:])
+    #     if key in ['science-pack-1', 'science-pack-2', 'science-pack-3', 'alien-science-pack']:
+    #         value = int(value)
+    #         if value <= 0:
+    #             return
+    #         self.ws.to_server.put({
+    #             "namespace": "consumption",
+    #             "data": {
+    #                 "type": key,
+    #                 "data": value
+    #             }
+    #         })
+    #     elif key in ['biter-count']:
+    #         value = int(value)
+    #         if value < 0:
+    #             return
+    #         self.ws.to_server.put({
+    #             "namespace": "status",
+    #             "data": {
+    #                 "type": key,
+    #                 "data": value
+    #             }
+    #         })
+    #     elif key in ['productivity-module-3', 'effectivity-module-3', 'speed-module-3']:
+    #         value = int(value)
+    #         if value <= 0:
+    #             return
+    #         self.ws.to_server.put({
+    #             "namespace": "production",
+    #             "data": {
+    #                 "type": key,
+    #                 "data": value
+    #             }
+    #         })
+    #     elif key in ['player-online-count', 'rocket-progress']:
+    #         value = int(value)
+    #         if value < 0:
+    #             return
+    #         self.ws.to_server.put({
+    #             "namespace": "updatecounter",
+    #             "data": {
+    #                 "type": key,
+    #                 "data": value
+    #             }
+    #         })
+    #     elif key in ['player_joined', 'player_left']:
+    #         logger.debug("Sending player event for %s : %s", key, value)
+    #         self.ws.to_server.put({
+    #             "namespace": "event",
+    #             "data": {
+    #                 "type": key,
+    #                 "data": {
+    #                     "playername": value
+    #                 }
+    #             }
+    #         })
+    #     elif key == 'rocket_launched':
+    #         logger.debug("Sending player event for %s : %s", key, value)
+    #         self.ws.to_server.put({
+    #             "namespace": "event",
+    #             "data": {"type": key}
+    #         })
+    #     elif key in ['rocket-silo-built', 'rocket-silo-mined']:
+    #         logger.debug("Sending event for rocket built")
+    #         self.ws_to_server.put({
+    #             "namespace": "event",
+    #             "data": {
+    #                 "type": "rocket-silo-built",
+    #                 "playername": value
+    #             }
+    #         })
+    #     else:
+    #         logger.debug("Left data with key %s untouched, value: %s", key, value)
 
     def parse_wsdata(self, data):
         namespace = data.get('namespace')
